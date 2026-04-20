@@ -1,2 +1,2 @@
 # market_server
-这是中国人民大学litonglab实验室data_share系统的数据市场前端
+这是中国人民大学litonglab实验室data_share系统的数据市场服务端

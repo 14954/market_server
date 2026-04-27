@@ -60,9 +60,6 @@ def create_dataset(owner_id: int, name: str, description: str, domain: str, data
     if not name:
         abort(400, description="name required")
 
-    if bool(object_key) == bool(file):
-        abort(400, description="provide exactly one upload source: objectKey or file")
-
     if file:
         _, object_key, _, saved_size = _save_uploaded_file(file)
         file_size = saved_size

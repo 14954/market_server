@@ -37,14 +37,7 @@ class DatasetUploadInSchema(Schema):
     fileSize = Integer(load_default=0)
     # S3 直传时提供 objectKey；本地上传时提供 file。
     objectKey = String(load_default=None, allow_none=True)
-    file = File(load_default=None, allow_none=True)
-
-    @validates_schema
-    def validate_upload_source(self, data, **kwargs):
-        object_key = data.get("objectKey")
-        file = data.get("file")
-        if bool(object_key) == bool(file):
-            raise ValidationError("Provide exactly one upload source: objectKey or file.")
+    file = File(required=False,load_default=None, allow_none=True)
 
 
 class DatasetMarketQueryInSchema(Schema):

@@ -5,7 +5,6 @@ from controllers.dataset_controller import (
     create_dataset, list_my_datasets, list_market_datasets,
     get_dataset_detail, toggle_listing, download_dataset_file, get_dataset_download_url
 )
-from models.user import User
 from schemas.dataset_schema import (
     DatasetDetailOutSchema,
     DatasetListingPatchInSchema,
@@ -64,19 +63,19 @@ def market_list(query):
 @dataset_bp.output(DatasetDetailOutSchema, 200)
 def dataset_detail(dataset_id):
     dataset, preview_lines = get_dataset_detail(dataset_id)
-    owner = User.query.get(dataset.owner_id)
     return {
         "dataset": {
             "id": dataset.id,
             "name": dataset.name,
             "description": dataset.description,
             "domain": dataset.domain,
-            "dataType": dataset.data_type,
-            "storageType": dataset.storage_type,
-            "fileSize": dataset.file_size,
+            "data_type": dataset.data_type,
+            "object_key": dataset.object_key,
+            "storage_type": dataset.storage_type,
+            "file_size": dataset.file_size,
             "downloads": dataset.downloads,
-            "isListed": dataset.is_listed,
-            "ownerName": owner.username if owner else "unknown",
+            "is_listed": dataset.is_listed,
+            "owner_id": dataset.owner_id,
         },
         "previewLines": preview_lines
     }

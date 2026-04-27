@@ -50,12 +50,13 @@ class DatasetDetailDatasetSchema(Schema):
     name = String(required=True)
     description = String(required=True)
     domain = String(required=True)
-    dataType = String(required=True)
-    storageType = String(required=True)
-    fileSize = Integer(required=True)
+    data_type = String(required=True)
+    object_key = String(required=True)
+    storage_type = String(required=True)
+    file_size = Integer(required=True)
     downloads = Integer(required=True)
-    isListed = Boolean(required=True)
-    ownerName = String(required=True)
+    is_listed = Boolean(required=True)
+    owner_id = Integer(required=True)
 
 
 class DatasetDetailOutSchema(Schema):

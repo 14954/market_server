@@ -10,6 +10,15 @@ class ShareCreateInSchema(Schema):
 class SharePatchInSchema(Schema):
     isApproved = Boolean(required=True)
 
+
+class ShareSignedUrlUpdateInSchema(Schema):
+    shareId = Integer(required=True)
+    signed_url = String(required=True)
+
+
+class ShareRejectInSchema(Schema):
+    shareId = Integer(required=True)
+
 class ShareCreateOutSchema(Schema):
     status = String(required=True)
     share_id = Integer(load_default=None, allow_none=True)
@@ -25,6 +34,7 @@ class ShareItemSchema(Schema):
     datasetId = Integer(load_default=None, allow_none=True)
     objectKey = String(load_default="unknown")
     storageType = String(load_default="")
+    signedUrl = String(load_default="", allow_none=True)
 
 
 class ShareListOutSchema(Schema):

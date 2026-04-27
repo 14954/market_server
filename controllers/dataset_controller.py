@@ -5,7 +5,9 @@ from werkzeug.utils import secure_filename
 
 from config import database
 from models.dataset import Dataset
+from models.dataset_permission import DatasetPermission
 from models.download_log import DownloadLog
+from models.share import Share
 from utils.preview import read_dataset_preview_lines
 
 
@@ -15,7 +17,11 @@ def _authorize_and_count_download(dataset_id: int, user_id: int):
     if not dataset:
         abort(404, description="not found")
 
-    if not dataset.is_listed and dataset.owner_id != user_id:
+    has_permission = DatasetPermission.query.filter_by(
+        dataset_id=dataset.id,
+        grantee_id=user_id,
+    ).first()
+    if not dataset.is_listed and dataset.owner_id != user_id and not has_permission:
         abort(403, description="not allowed")
 
     log = DownloadLog(user_id=user_id, dataset_id=dataset.id)
@@ -23,6 +29,17 @@ def _authorize_and_count_download(dataset_id: int, user_id: int):
     dataset.downloads += 1
     database.session.commit()
     return dataset
+
+
+def _get_share_signed_url(dataset_id: int, user_id: int):
+    share = Share.query.filter_by(
+        dataset_id=dataset_id,
+        consumer_id=user_id,
+        status='approved',
+    ).order_by(Share.id.desc()).first()
+    if not share or not share.signed_url:
+        abort(404, description="download url missing")
+    return share.signed_url
 
 
 def _save_uploaded_file(file):
@@ -129,9 +146,7 @@ def download_dataset_file(dataset_id: int, user_id: int):
 
     storage_type = (getattr(dataset, "storage_type", None) or "local").lower()
     if storage_type == "s3":
-        if not getattr(dataset, "s3_url", None):
-            abort(404, description="download url missing")
-        return {"downloadUrl": dataset.s3_url}
+        return {"downloadUrl": _get_share_signed_url(dataset.id, user_id)}
 
     file_path = _local_file_path_from_object_key(dataset.object_key)
     if not file_path:
@@ -149,9 +164,10 @@ def get_dataset_download_url(dataset_id: int, user_id: int):
     storage_type = (getattr(dataset, "storage_type", None) or "local").lower()
 
     if storage_type == "s3":
-        if not getattr(dataset, "s3_url", None):
-            abort(404, description="download url missing")
-        return {"downloadUrl": dataset.s3_url, "source": "s3"}
+        return {
+            "downloadUrl": _get_share_signed_url(dataset.id, user_id),
+            "source": "s3",
+        }
 
     return {
         "downloadUrl": url_for("datasets.download_file", dataset_id=dataset.id, _external=False),

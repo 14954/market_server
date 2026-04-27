@@ -8,6 +8,23 @@ from models.share import Share
 from models.dataset import Dataset
 from models.dataset_permission import DatasetPermission
 
+
+def _grant_share_permission(share: Share, provider_id: int):
+    share.status = 'approved'
+    share.responded_at = func.now()
+    existing_perm = DatasetPermission.query.filter_by(
+        dataset_id=share.dataset_id,
+        grantee_id=share.consumer_id,
+    ).first()
+    if not existing_perm:
+        new_perm = DatasetPermission(
+            dataset_id=share.dataset_id,
+            grantee_id=share.consumer_id,
+            granted_by=provider_id,
+            source_share_id=share.id,
+        )
+        database.session.add(new_perm)
+
 def create_share(consumer_id: BigInteger, dataset_id: BigInteger, description: str):
     """注册新共享"""
     # 检查必填参数
@@ -54,19 +71,7 @@ def update_share(share_id: int, provider_id: int, isApproved: bool):
         abort(400, description="share request already processed")
 
     if isApproved:
-        # 批准：更新状态并创建运行时权限
-        share.status = 'approved'
-        share.responded_at = func.now()
-        # 在同一事务内插入 DatasetPermission，若已存在则忽略
-        existing_perm = DatasetPermission.query.filter_by(dataset_id=share.dataset_id, grantee_id=share.consumer_id).first()
-        if not existing_perm:
-            new_perm = DatasetPermission(
-                dataset_id=share.dataset_id,
-                grantee_id=share.consumer_id,
-                granted_by=provider_id,
-                source_share_id=share.id,
-            )
-            database.session.add(new_perm)
+        _grant_share_permission(share, provider_id)
     else:
         # 拒绝：更新状态并保留审计记录
         share.status = 'rejected'
@@ -78,6 +83,49 @@ def update_share(share_id: int, provider_id: int, isApproved: bool):
         database.session.rollback()
         abort(500, description="failed to update share")
 
+    return {"status": "success"}
+
+
+def update_share_signed_url(share_id: int, provider_id: int, signed_url: str):
+    if not signed_url:
+        abort(400, description="signed_url required")
+
+    share = Share.query.get(share_id)
+    if not share:
+        abort(404, description="share not found")
+    if share.provider_id != provider_id:
+        abort(403, description="not allowed")
+    if share.status != 'pending':
+        abort(400, description="share request already processed")
+
+    share.signed_url = signed_url
+    _grant_share_permission(share, provider_id)
+
+    try:
+        database.session.commit()
+    except IntegrityError:
+        database.session.rollback()
+        abort(500, description="failed to update share")
+
+    return {"status": "success"}
+
+
+def reject_share(share_id: int, provider_id: int):
+    share = Share.query.get(share_id)
+    if not share:
+        abort(404, description="share not found")
+    if share.provider_id != provider_id:
+        abort(403, description="not allowed")
+    if share.status != 'pending':
+        abort(400, description="share request already processed")
+
+    share.status = 'rejected'
+    share.responded_at = func.now()
+    try:
+        database.session.commit()
+    except IntegrityError:
+        database.session.rollback()
+        abort(500, description="failed to reject share")
     return {"status": "success"}
 
 def list_my_sharing(provider_id: int):

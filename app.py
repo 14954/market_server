@@ -33,9 +33,9 @@ def create_app():
 
     # 注册蓝图
     from routes import auth_bp, dataset_bp, share_bp
-    app.register_blueprint(auth_bp, url_prefix="/api/auth")
-    app.register_blueprint(dataset_bp, url_prefix="/api/datasets")
-    app.register_blueprint(share_bp, url_prefix="/api/shares")
+    app.register_blueprint(auth_bp, url_prefix="/remote/auth")
+    app.register_blueprint(dataset_bp, url_prefix="/remote/datasets")
+    app.register_blueprint(share_bp, url_prefix="/remote/shares")
     # 健康检查路由
     @app.route("/health", methods=["GET"])
     def health_check():

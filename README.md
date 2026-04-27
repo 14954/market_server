@@ -52,24 +52,24 @@ python app.py
 
 ## Auth
 
-- `POST /api/auth/register`
-- `POST /api/auth/login`
+- `POST /remote/auth/register`
+- `POST /remote/auth/login`
 
 ## Datasets
 
-- `POST /api/datasets/upload`（上传数据集，multipart/form-data）
-- `GET /api/datasets/mine`（我的数据集）
-- `GET /api/datasets/market`（数据市场，支持 query: `domain`、`sort`）
-- `GET /api/datasets/<dataset_id>`（数据集详情）
-- `PATCH /api/datasets/<dataset_id>/listing`（更新上架状态）
-- `GET /api/datasets/<dataset_id>/download`（下载）
-- `GET /api/datasets/<dataset_id>/download-url`（获取下载地址）
+- `POST /remote/datasets/upload`（上传数据集，multipart/form-data）
+- `GET /remote/datasets/mine`（我的数据集）
+- `GET /remote/datasets/market`（数据市场，支持 query: `domain`、`sort`）
+- `GET /remote/datasets/<dataset_id>`（数据集详情）
+- `PATCH /remote/datasets/<dataset_id>/listing`（更新上架状态）
+- `GET /remote/datasets/<dataset_id>/download`（下载）
+- `GET /remote/datasets/<dataset_id>/download-url`（获取下载地址）
 
 ## Shares
 
-- `POST /api/shares/requests`（创建共享请求）
-- `PATCH /api/shares/<share_id>`（provider 审批共享请求）
-- `GET /api/shares/sharing-with-others`（别人对我的共享请求）
-- `GET /api/shares/shared-with-me`（共享给我的数据）
-- `GET /api/shares/requests-by-me`（我发出的共享请求）
+- `POST /remote/shares/requests`（创建共享请求）
+- `PATCH /remote/shares/<share_id>`（provider 审批共享请求）
+- `GET /remote/shares/sharing-with-others`（别人对我的共享请求）
+- `GET /remote/shares/shared-with-me`（共享给我的数据）
+- `GET /remote/shares/requests-by-me`（我发出的共享请求）
 

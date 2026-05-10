@@ -13,7 +13,8 @@ class SharePatchInSchema(Schema):
 
 class ShareSignedUrlUpdateInSchema(Schema):
     shareId = Integer(required=True)
-    signed_url = String(required=True)
+    signed_url = String(load_default="", allow_none=True)
+    storageType = String(load_default="")
 
 
 class ShareRejectInSchema(Schema):

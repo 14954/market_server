@@ -5,6 +5,7 @@ from controllers.share_controller import (
     create_share,
     list_my_sharing,
     list_shared_with_me,
+    update_share,
     update_share_signed_url,
     list_my_requests,
     reject_share,
@@ -39,7 +40,11 @@ def create(data):
 @share_bp.output(ShareCreateOutSchema, 200)
 def update(data):
     provider_id = int(get_jwt_identity())
-    status = update_share_signed_url(data["shareId"], provider_id, data["signed_url"])
+    storage_type = (data.get("storageType") or data.get("storage_type") or "").strip().lower()
+    if storage_type == "local":
+        status = update_share(data["shareId"], provider_id, True)
+    else:
+        status = update_share_signed_url(data["shareId"], provider_id, data.get("signed_url"))
     return status
 
 
@@ -71,7 +76,7 @@ def list_my_sharing_route():
             "objectKey": dataset.object_key if dataset else "unknown",
             "storageType": dataset.storage_type if dataset else "",
             "status": sd.status,
-            "signedUrl": sd.signed_url or "",
+            # "signedUrl": sd.signed_url or "",
         })
     return {"sharing": sharing_list}
 
@@ -91,7 +96,6 @@ def list_shared_with_me_route():
             "providerName": User.query.get(sd.provider_id).username if sd.provider_id else "unknown",
             "datasetName": dataset.name if dataset else "unknown",
             "datasetId": sd.dataset_id,
-            "objectKey": dataset.object_key if dataset else "unknown",
             "storageType": dataset.storage_type if dataset else "",
             "signedUrl": sd.signed_url or "",
         })
@@ -114,8 +118,5 @@ def list_my_requests_route():
             "request_description": sd.request_description,
             "status": sd.status,
             "datasetId": sd.dataset_id,
-            "objectKey": dataset.object_key if dataset else "unknown",
-            "storageType": dataset.storage_type if dataset else "",
-            "signedUrl": sd.signed_url or "",
         })
     return {"requests": requests_list}

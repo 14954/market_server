@@ -16,6 +16,11 @@ class Dataset(database.Model):
     downloads = Column(Integer, nullable=False, default=0)            # 下载次数  
     owner_id = Column(BigInteger, ForeignKey('users.id'), nullable=False)
 
+    owner = database.relationship("User", backref="datasets")
+
+    @property
+    def owner_name(self):
+        return self.owner.username if self.owner else ""
     @property
     def storage_type(self):
         object_key = self.object_key or ""

@@ -57,6 +57,7 @@ class DatasetDetailDatasetSchema(Schema):
     downloads = Integer(required=True)
     is_listed = Boolean(required=True)
     owner_id = Integer(required=True)
+    owner_name = String(required=True)
 
 
 class DatasetDetailOutSchema(Schema):

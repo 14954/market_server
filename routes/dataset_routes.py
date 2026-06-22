@@ -76,6 +76,7 @@ def dataset_detail(dataset_id):
             "downloads": dataset.downloads,
             "is_listed": dataset.is_listed,
             "owner_id": dataset.owner_id,
+            "owner_name": dataset.owner_name,
         },
         "previewLines": preview_lines
     }

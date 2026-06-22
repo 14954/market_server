@@ -6,7 +6,7 @@ class AuthBaseSchema(Schema):
     password = String(required=True,load_only=True)
 
 class AuthRegisterInSchema(AuthBaseSchema):
-    pass
+    public_key = String(required=True, load_only=True)
 
 
 class UserOutSchema(Schema):

@@ -28,6 +28,7 @@ class ShareCreateOutSchema(Schema):
 class ShareItemSchema(Schema):
     id = Integer(required=True)
     consumerName = String(load_default="")
+    consumerPublicKey = String(load_default="")
     providerName = String(load_default="")
     datasetName = String(required=True)
     request_description = String(load_default="")

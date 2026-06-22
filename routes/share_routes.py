@@ -68,9 +68,11 @@ def list_my_sharing_route():
     sharing_list = []
     for sd in sharing_dataset:
         dataset = Dataset.query.get(sd.dataset_id) if sd.dataset_id else None
+        consumer = User.query.get(sd.consumer_id) if sd.consumer_id else None
         sharing_list.append({
             "id": sd.id,
-            "consumerName": User.query.get(sd.consumer_id).username if sd.consumer_id else "unknown",
+            "consumerName": consumer.username if consumer else "unknown",
+            "consumerPublicKey": consumer.public_key if consumer else "",
             "datasetName": dataset.name if dataset else "unknown",
             "request_description": sd.request_description,
             "objectKey": dataset.object_key if dataset else "unknown",

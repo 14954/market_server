@@ -13,7 +13,7 @@ def register(data):
     username = data["username"]
     password = data["password"]
     # 调用控制器执行注册逻辑
-    user_info = register_user(username, password)
+    user_info = register_user(username, password, data["public_key"])
     return user_info
 
 @auth_bp.post("/login")

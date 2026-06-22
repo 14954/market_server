@@ -48,7 +48,6 @@ def create_share(consumer_id: BigInteger, dataset_id: BigInteger, description: s
         consumer_id=consumer_id,
         dataset_id=dataset_id,
         request_description=description or "",
-        consumer_public_key="",
     )
     database.session.add(new_share)
     try:
